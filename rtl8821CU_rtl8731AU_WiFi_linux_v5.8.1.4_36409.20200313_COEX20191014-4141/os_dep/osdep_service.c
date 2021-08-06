@@ -2220,9 +2220,9 @@ static int isFileReadable(const char *path, u32 *sz)
 	if (IS_ERR(fp))
 		ret = PTR_ERR(fp);
 	else {
-		oldfs = get_fs();
-		#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0))
-		set_fs(KERNEL_DS);
+		oldfs = force_uaccess_begin();
+		#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 12, 0))
+		force_uaccess_begin();
 		#else
 		set_fs(get_ds());
 		#endif
@@ -2238,7 +2238,7 @@ static int isFileReadable(const char *path, u32 *sz)
 			#endif
 		}
 
-		set_fs(oldfs);
+		force_uaccess_end(oldfs);
 		filp_close(fp, NULL);
 	}
 	return ret;
@@ -2262,14 +2262,14 @@ static int retriveFromFile(const char *path, u8 *buf, u32 sz)
 		if (0 == ret) {
 			RTW_INFO("%s openFile path:%s fp=%p\n", __FUNCTION__, path , fp);
 
-			oldfs = get_fs();
-			#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0))
-			set_fs(KERNEL_DS);
+			oldfs = force_uaccess_begin();
+			#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 12, 0))
+			force_uaccess_begin();
 			#else
 			set_fs(get_ds());
 			#endif
 			ret = readFile(fp, buf, sz);
-			set_fs(oldfs);
+			force_uaccess_end(oldfs);
 			closeFile(fp);
 
 			RTW_INFO("%s readFile, ret:%d\n", __FUNCTION__, ret);
@@ -2301,14 +2301,14 @@ static int storeToFile(const char *path, u8 *buf, u32 sz)
 		if (0 == ret) {
 			RTW_INFO("%s openFile path:%s fp=%p\n", __FUNCTION__, path , fp);
 
-			oldfs = get_fs();
-			#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0))
-			set_fs(KERNEL_DS);
+			oldfs = force_uaccess_begin();
+			#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 12, 0))
+			force_uaccess_begin();
 			#else
 			set_fs(get_ds());
 			#endif
 			ret = writeFile(fp, buf, sz);
-			set_fs(oldfs);
+			force_uaccess_end(oldfs);
 			closeFile(fp);
 
 			RTW_INFO("%s writeFile, ret:%d\n", __FUNCTION__, ret);

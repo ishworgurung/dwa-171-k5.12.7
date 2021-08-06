@@ -86,7 +86,7 @@ inline struct proc_dir_entry *rtw_proc_create_entry(const char *name, struct pro
 	struct proc_dir_entry *entry;
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 26))
-	entry = proc_create_data(name,  S_IFREG | S_IRUGO | S_IWUGO, parent, fops, data);
+	entry = proc_create_data(name,  S_IFREG | S_IRUGO | S_IWUGO, parent, (const struct proc_ops*) fops, data);
 #else
 	entry = create_proc_entry(name, S_IFREG | S_IRUGO | S_IWUGO, parent);
 	if (entry) {
